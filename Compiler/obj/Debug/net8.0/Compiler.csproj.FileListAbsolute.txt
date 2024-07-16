@@ -1,0 +1,14 @@
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\bin\Debug\net8.0\Compiler.exe
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\bin\Debug\net8.0\Compiler.deps.json
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\bin\Debug\net8.0\Compiler.runtimeconfig.json
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\bin\Debug\net8.0\Compiler.dll
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\bin\Debug\net8.0\Compiler.pdb
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\obj\Debug\net8.0\Compiler.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\obj\Debug\net8.0\Compiler.AssemblyInfoInputs.cache
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\obj\Debug\net8.0\Compiler.AssemblyInfo.cs
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\obj\Debug\net8.0\Compiler.csproj.CoreCompileInputs.cache
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\obj\Debug\net8.0\Compiler.dll
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\obj\Debug\net8.0\refint\Compiler.dll
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\obj\Debug\net8.0\Compiler.pdb
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\obj\Debug\net8.0\Compiler.genruntimeconfig.cache
+C:\Users\jerem\OneDrive\Documents\GitHub\mini-c-compiler\compiler\obj\Debug\net8.0\ref\Compiler.dll
