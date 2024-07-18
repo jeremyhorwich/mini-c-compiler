@@ -17,13 +17,11 @@ namespace Lex
             while (_position < _input.Length)
             {
                 var nextToken = new Token(_input.Substring(_position));
-
                 if (nextToken.Type == TokenType.none)
                 {
                     _position++;
                     continue;
                 }
-
                 _position += nextToken.Length;
                 tokens.Add(nextToken);
             }

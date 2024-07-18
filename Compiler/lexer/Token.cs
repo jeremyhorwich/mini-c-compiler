@@ -1,4 +1,5 @@
 using Lex;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 
 namespace Lex 
@@ -27,19 +28,19 @@ namespace Lex
 
         private static Dictionary<TokenType, Regex> _regexPatterns = new Dictionary<TokenType, Regex>
         {
-            { TokenType.openBrace, new Regex(@"{") },
-            { TokenType.closeBrace, new Regex(@"}") },
-            { TokenType.openParantheses, new Regex(@"\(") },
-            { TokenType.closedParentheses, new Regex(@"\)") },
-            { TokenType.semicolon, new Regex(@";") },
-            { TokenType.identifier, new Regex(@"[a-zA-Z]\w*") },
-            { TokenType.integerLiteral, new Regex(@"[0-9]+") }
+            { TokenType.openBrace, new Regex(@"^{") },
+            { TokenType.closeBrace, new Regex(@"^}") },
+            { TokenType.openParantheses, new Regex(@"^\(") },
+            { TokenType.closedParentheses, new Regex(@"^\)") },
+            { TokenType.semicolon, new Regex(@"^;") },
+            { TokenType.identifier, new Regex(@"^[a-zA-Z]\w*") },
+            { TokenType.integerLiteral, new Regex(@"^[0-9]+") }
         };
 
         private static List<Regex> _keywordPatterns = new List<Regex>
         {
-            new Regex(@"\bint\b"),
-            new Regex(@"\breturn\b")
+            new Regex(@"^\bint\b"),
+            new Regex(@"^\breturn\b")
         };
 
         public Token(string input)
@@ -53,11 +54,22 @@ namespace Lex
             return Value;
         }
 
-        private void FindMatch(string _value)
+        private void FindMatch(string input)
         {
+            foreach (var keyword in _keywordPatterns)
+            {
+                Match match = keyword.Match(input);
+                if (match.Success)
+                {
+                    _type = TokenType.keyword;
+                    _value = match.Value;
+                    return;
+                }
+            }
+                        
             foreach (var kvp in _regexPatterns)
             {
-                Match match = kvp.Value.Match(_value);
+                Match match = kvp.Value.Match(input);
                 if (match.Success)
                 {
                     _type = kvp.Key;
@@ -66,19 +78,7 @@ namespace Lex
                 }
             }
 
-            foreach (var keyword in _keywordPatterns)
-            {
-                Match match = keyword.Match(_value);
-                if (match.Success)
-                {
-                    _type = TokenType.keyword;
-                    _value = match.Value;
-                    return;
-                }
-            }
-
             _type = TokenType.none;
-            _value = " ";
         }
     }
 }
