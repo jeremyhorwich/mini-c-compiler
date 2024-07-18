@@ -16,9 +16,9 @@ namespace Lexer
 
             while (_position < _input.Length)
             {
-                nextToken = new Token(currentChar)
+                var nextToken = new Token(_input.Substring(_position));
 
-                if (nextToken.TokenType == TokenType.none)
+                if (nextToken.Type == TokenType.none)
                 {
                     _position++;
                     continue;
