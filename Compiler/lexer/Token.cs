@@ -1,4 +1,5 @@
 using Lexer;
+using System.Text.RegularExpressions;
 
 namespace Lexer 
 {
@@ -9,40 +10,39 @@ namespace Lexer
         closedParentheses,
         openBrace,
         closeBrace,
-        constant,
+        integerLiteral,
         semicolon,
+        identifier,
         none
     }
 
     public class Token
     {
 
-        public TokenType Type (get;)
-        public string Value (get;)
+        public TokenType Type { get; set; }
+        public string Value { get; set; }
+        public int Length => Value.Length;
 
-        public string length (get;)
-
-        private static var _regexPatterns = new private Dictionary<TokenType, Regex>
+        private static Dictionary<TokenType, Regex> _regexPatterns = new Dictionary<TokenType, Regex>
         {
-            { TokenType.OpenBrace, new Regex(@"{") },
-            { TokenType.CloseBrace, new Regex(@"}") },
-            { TokenType.OpenParenthesis, new Regex(@"\(") },
-            { TokenType.CloseParenthesis, new Regex(@"\)") },
-            { TokenType.Semicolon, new Regex(@";") },
-            { TokenType.Identifier, new Regex(@"[a-zA-Z]\w*") },
-            { TokenType.IntegerLiteral, new Regex(@"[0-9]+") }
-        }
+            { TokenType.openBrace, new Regex(@"{") },
+            { TokenType.closeBrace, new Regex(@"}") },
+            { TokenType.openParantheses, new Regex(@"\(") },
+            { TokenType.closedParentheses, new Regex(@"\)") },
+            { TokenType.semicolon, new Regex(@";") },
+            { TokenType.identifier, new Regex(@"[a-zA-Z]\w*") },
+            { TokenType.integerLiteral, new Regex(@"[0-9]+") }
+        };
 
-        private static var _keywordPatterns = new private List<string>
+        private static List<Regex> _keywordPatterns = new List<Regex>
         {
-            { TokenType.IntKeyword, new Regex(@"\bint\b") },
-            { TokenType.ReturnKeyword, new Regex(@"\breturn\b") },
-        }
+            new Regex(@"\bint\b"),
+            new Regex(@"\breturn\b")
+        };
 
         public Token(string value)
         {
             Value = value;
-            Length = Value.length;
             Type = TryMatch(Value);
         }
 
