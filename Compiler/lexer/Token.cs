@@ -19,9 +19,11 @@ namespace Lex
     public class Token
     {
 
-        public TokenType Type { get; set; }
-        public string Value { get; set; }
+        private string _value {get; set;}
+        public string Value => _value;
         public int Length => Value.Length;
+        private TokenType _type;
+        public TokenType Type => _type;
 
         private static Dictionary<TokenType, Regex> _regexPatterns = new Dictionary<TokenType, Regex>
         {
@@ -40,10 +42,10 @@ namespace Lex
             new Regex(@"\breturn\b")
         };
 
-        public Token(string value)
+        public Token(string input)
         {
-            Value = value;
-            Type = TryMatch(Value);
+            _value = " ";
+            FindMatch(input);
         }
 
         public override string ToString()
@@ -51,14 +53,16 @@ namespace Lex
             return Value;
         }
 
-        private TokenType TryMatch(string _value)
+        private void FindMatch(string _value)
         {
             foreach (var kvp in _regexPatterns)
             {
                 Match match = kvp.Value.Match(_value);
                 if (match.Success)
                 {
-                    return kvp.Key;
+                    _type = kvp.Key;
+                    _value = match.Value;
+                    return;
                 }
             }
 
@@ -67,11 +71,14 @@ namespace Lex
                 Match match = keyword.Match(_value);
                 if (match.Success)
                 {
-                    return TokenType.keyword;
+                    _type = TokenType.keyword;
+                    _value = match.Value;
+                    return;
                 }
             }
 
-            return TokenType.none; // Return null if no match is found
+            _type = TokenType.none;
+            _value = " ";
         }
     }
 }
