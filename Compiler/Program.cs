@@ -1,10 +1,19 @@
-﻿namespace App
+﻿using Lex;
+
+namespace App
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello world!");
+            string test = "{ int return }";
+            var lex = new Lexer(test);
+            List<Token> tokens = lex.Tokenize();
+            
+            foreach (Token token in tokens)
+            {
+                Console.WriteLine(token + "|");
+            }
         }
     }
 }

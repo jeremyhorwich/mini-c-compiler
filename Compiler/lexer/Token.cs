@@ -1,7 +1,7 @@
-using Lexer;
+using Lex;
 using System.Text.RegularExpressions;
 
-namespace Lexer 
+namespace Lex 
 {
     public enum TokenType
     {
@@ -44,6 +44,11 @@ namespace Lexer
         {
             Value = value;
             Type = TryMatch(Value);
+        }
+
+        public override string ToString()
+        {
+            return Value;
         }
 
         private TokenType TryMatch(string _value)
