@@ -14,12 +14,6 @@ namespace Lexer
         none
     }
 
-
-    private var _keywords = new List<Regex> 
-    {
-        //all the keywords above
-    }
-
     public class Token
     {
 
