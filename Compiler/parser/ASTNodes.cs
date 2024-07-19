@@ -4,6 +4,7 @@ namespace Parser
 {
     abstract class Node
     {
+        public bool parseValid;
         public List<Token> validTokens = new List<Token>();
 
         public Node(List<Token> tokens)
