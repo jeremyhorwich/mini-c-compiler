@@ -1,19 +1,20 @@
 ﻿using Lex;
+using Parser;
 
 namespace App
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            string test = "int main() {\nreturn 2;\n}";
+            string test = "return 3;";
             var lex = new Lexer(test);
             List<Token> tokens = lex.Tokenize();
             
-            foreach (Token token in tokens)
-            {
-                Console.WriteLine(token);
-            }
+            Return statement = new Return(tokens);
+            string code = statement.Generate();
+            Console.WriteLine(code);
+            
         }
     }
 }

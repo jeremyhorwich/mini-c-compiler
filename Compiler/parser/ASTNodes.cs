@@ -5,76 +5,76 @@ namespace Parser
     abstract class Node
     {
         public bool parseValid;
-        public List<Token> validTokens = new List<Token>();
 
         public Node(List<Token> tokens)
         {
-            validTokens = Parse(tokens);
+            parseValid = Parse(tokens);
         }
 
-        public abstract List<Token> Parse(List<Token> tokens);
-        public abstract string Generate();
+        public abstract bool Parse(List<Token> tokens);
+        protected abstract string GenerateImplementation();
+        public string Generate()
+        {
+            if (!parseValid)
+            {
+                throw new InvalidOperationException("Tried to generate string for invalid parse");
+            }
+
+            return GenerateImplementation();
+        }
     }
 
 
     class Expression : Node
     {
+        private string? integerLiteral;
         public Expression(List<Token> tokens) : base(tokens)
         {
         }
 
-        public override List<Token> Parse(List<Token> tokens)
+        public override bool Parse(List<Token> tokens)
         {
             if (tokens[0].Type == TokenType.integerLiteral)
             {
-                return [tokens[0]];
-                //Must change to match regular expressions (integers of more than one digit)
+                integerLiteral = tokens[0].Value;
+                return true;                
             }
 
-            return [];
+            return false;
         }
 
-        public override string Generate()
+        protected override string GenerateImplementation()
         {
-            return "";
+            return $"mov1    ${integerLiteral}, %eax";
         }
     }   
 
     class Return : Node
     {
+        private Expression? expression;
+
         public Return(List<Token> tokens) : base(tokens)
         {
         }
 
-        public override List<Token> Parse(List<Token> tokens)
+
+        public override bool Parse(List<Token> tokens)
         {
-            if (tokens.Count < 3)
-            {
-                return [];
-            }
+            if (tokens.Count < 3) return false;
+            if (tokens[0].Value != "return") return false;
+            if (tokens[1].Type != TokenType.integerLiteral) return false;
+            if (tokens[2].Type != TokenType.semicolon) return false;
 
-            if (tokens[0].Value != "return")
-            {
-                return [];
-            }
-
-            if (tokens[1].Type != TokenType.integerLiteral) 
-            {
-                return [];
-                //Must modify indices for multidigit integers
-            }
-            
-            if (tokens[2].Type != TokenType.semicolon)
-            {
-                return [];
-            }
-
-            return tokens.GetRange(0, 3);
+            expression = new Expression(tokens.GetRange(1,2));
+            return true;
         }
 
-        public override string Generate()
+        protected override string GenerateImplementation()
         {
-            return "";
+            string assembly = "";
+            assembly += expression?.Generate();
+            assembly += "\nret";
+            return assembly;
         }
     }
 }
