@@ -4,27 +4,24 @@ namespace Parser
 {
     public class AST
     {
-        List<Node> nodes = new List<Node>();
+        private Function function;
 
         public AST(List<Token> tokens)
         {
-            //Get our list of nodes
+            function = new Function(tokens);
         }
 
         public override string ToString()
         {
-            //Pretty print AST
-            return "";
+            return function.ToString();
         }
 
         public string ConvertToAssembly()
         {
             string assembly = "";
-            foreach (Node node in nodes)
-            {
-                assembly += node.Generate();
-            }
-
+            if (!function.parseValid) return "COULD NOT GENERATE";  //throw error?
+            
+            assembly += function.Generate();
             return assembly;
         }
     }

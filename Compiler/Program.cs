@@ -7,13 +7,14 @@ namespace App
     {
         static void Main()
         {
-            string test = "int foo() {return 450;}";
+            string test = "int main() {return 2;}";
             var lex = new Lexer(test);
             List<Token> tokens = lex.Tokenize();
             
             Function statement = new Function(tokens);
             string code = statement.Generate();
-            Console.WriteLine(code);         
+            Console.WriteLine(code);
+            Console.WriteLine(statement.ToString());         
         }
     }
 }

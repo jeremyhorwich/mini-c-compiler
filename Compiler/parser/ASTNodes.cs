@@ -59,6 +59,11 @@ namespace Parser
         {
             return $"\n mov1    ${integerLiteral}, %eax";
         }
+
+        public override string ToString()
+        {
+            return $"Int<{integerLiteral}>";
+        }
     }   
 
     class Return : Node
@@ -89,6 +94,11 @@ namespace Parser
             assembly += expression?.Generate();
             assembly += "\n ret";
             return assembly;
+        }
+
+        public override string ToString()
+        {
+            return $"\n     RETURN {expression?.ToString()}";
         }
     }
 
@@ -129,6 +139,15 @@ namespace Parser
             assembly += $" .globl _{identifier} \n_{identifier}:";
             assembly += _ret?.Generate();
             return assembly;
+        }
+
+        public override string ToString()
+        {
+            string declaration = $"FUN INT {identifier}";
+            string parameters = "\n Params: ()";
+            string body = $"\n Body: {_ret?.ToString()}";
+            
+            return(declaration + parameters + body);
         }
     }
 }
