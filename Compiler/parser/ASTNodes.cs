@@ -1,7 +1,7 @@
 using System.Data;
 using Lex;
 
-namespace Parser
+namespace Parse
 {
     abstract class Node
     {
@@ -57,7 +57,7 @@ namespace Parser
 
         protected override string GenerateImplementation()
         {
-            return $"\n mov1    ${integerLiteral}, %eax";
+            return $"\n\tmov    ${integerLiteral}, %eax";
         }
 
         public override string ToString()
@@ -92,7 +92,7 @@ namespace Parser
         {
             string assembly = "";
             assembly += expression?.Generate();
-            assembly += "\n ret";
+            assembly += "\n\tret";
             return assembly;
         }
 
@@ -105,7 +105,7 @@ namespace Parser
 
     class Function : Node
     {
-        string? identifier;
+        public string? identifier;
         Return? _ret;
 
         public Function(List<Token> tokens) : base(tokens)
@@ -136,8 +136,8 @@ namespace Parser
         protected override string GenerateImplementation()
         {
             string assembly = "";
-            assembly += $" .globl _{identifier} \n_{identifier}:";
-            assembly += _ret?.Generate();
+            assembly += $"\n.globl _{identifier} \n\n_{identifier}:";
+            assembly +=_ret?.Generate();
             return assembly;
         }
 
@@ -147,7 +147,7 @@ namespace Parser
             string parameters = "\n Params: ()";
             string body = $"\n Body: {_ret?.ToString()}";
             
-            return(declaration + parameters + body);
+            return declaration + parameters + body;
         }
     }
 }
