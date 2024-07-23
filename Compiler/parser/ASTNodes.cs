@@ -57,7 +57,7 @@ namespace Parse
 
         protected override string GenerateImplementation()
         {
-            return $"\n\tmov    ${integerLiteral}, %rax";
+            return new Instruction("movl", $"${integerLiteral}, %eax").Format();
         }
 
         public override string ToString()
@@ -92,7 +92,8 @@ namespace Parse
         {
             string assembly = "";
             assembly += expression?.Generate();
-            assembly += "\n\tret";
+            assembly += new Instruction("popq", "%rbp").Format();
+            assembly += new Instruction("ret", "").Format();
             return assembly;
         }
 
@@ -105,7 +106,7 @@ namespace Parse
 
     class Function : Node
     {
-        public string? identifier;
+        public string identifier = "";
         Return? _ret;
 
         public Function(List<Token> tokens) : base(tokens)
@@ -136,8 +137,11 @@ namespace Parse
         protected override string GenerateImplementation()
         {
             string assembly = "";
-            assembly += $"\n.global _{identifier} \n\n_{identifier}:";
-            assembly +=_ret?.Generate();
+            assembly += new Instruction(".globl",identifier).Format();
+            assembly += $"\n{identifier}:";
+            assembly += new Instruction("pushq", "%rbp").Format();
+            assembly += new Instruction("movq", "%rsp, %rbp").Format();
+            assembly += _ret?.Generate();
             return assembly;
         }
 

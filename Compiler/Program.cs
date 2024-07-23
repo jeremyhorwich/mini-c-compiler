@@ -10,7 +10,8 @@ namespace App
     {
         static void Main(string[] args)
         {
-            Compile(args[0]);
+            Test("int foo() {return 2;}");
+            //Compile(args[0]);
         }
 
         private static void Test(string testCode)

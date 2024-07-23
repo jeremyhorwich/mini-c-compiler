@@ -1,0 +1,3 @@
+- Include .file                                                         .file	"generate_asm.c"
+- Include compiler .ident                                               .ident	"GCC: (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r3) 14.1.0"
+- Check for main function
