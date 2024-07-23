@@ -57,7 +57,7 @@ namespace Parse
 
         protected override string GenerateImplementation()
         {
-            return $"\n\tmov    ${integerLiteral}, %eax";
+            return $"\n\tmov    ${integerLiteral}, %rax";
         }
 
         public override string ToString()
@@ -136,7 +136,7 @@ namespace Parse
         protected override string GenerateImplementation()
         {
             string assembly = "";
-            assembly += $"\n.globl _{identifier} \n\n_{identifier}:";
+            assembly += $"\n.global _{identifier} \n\n_{identifier}:";
             assembly +=_ret?.Generate();
             return assembly;
         }

@@ -19,8 +19,8 @@ namespace Parse
 
         public string ConvertToAssembly()
         {
-            string assembly = ".globl _start";
             if (!function.parseValid) return "COULD NOT GENERATE";  //throw error?
+            string assembly = ".global _start";
             
             assembly += function.Generate();
             assembly += "\n";
@@ -28,8 +28,9 @@ namespace Parse
             
             _start:
                 call    _{function.identifier}
-                mov     $1, %eax
-                call    ExitProcess
+                mov     $60, %rax
+                xor     %rdi, %rdi
+                syscall
             """;
 
             return assembly;
