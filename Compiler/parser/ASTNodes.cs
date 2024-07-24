@@ -1,61 +1,22 @@
-using System.Data;
-using Lex;
+using System.Net.Http.Headers;
 
 namespace Parse
 {
-    abstract class Node
+    public abstract class Node
     {
-        public bool parseValid;
-
-        protected int _tokensUsed = 0;
-        public int tokensUsed {get 
-        {
-            if (_tokensUsed == 0)
-            {
-                throw new DataException("Tried to access length for invalid parse");
-            }
-            return _tokensUsed;
-        }}
-
-        public Node(List<Token> tokens)
-        {
-            parseValid = Parse(tokens);
-        }
-
-        public abstract bool Parse(List<Token> tokens);
-        protected abstract string GenerateImplementation();
-        public string Generate()
-        {
-            if (!parseValid)
-            {
-                throw new InvalidOperationException("Tried to generate string for invalid parse");
-            }
-
-            return GenerateImplementation();
-        }
+        public abstract string Generate();
     }
 
 
-    class Expression : Node
+    public class Constant : Node
     {
-        private string? integerLiteral;
-        public Expression(List<Token> tokens) : base(tokens)
+        private string integerLiteral;
+        public Constant(string _integerLiteral)
         {
+            integerLiteral = _integerLiteral;
         }
 
-        public override bool Parse(List<Token> tokens)
-        {
-            if (tokens[0].Type == TokenType.integerLiteral)
-            {
-                integerLiteral = tokens[0].Value;
-                _tokensUsed = 1;
-                return true;                
-            }
-
-            return false;
-        }
-
-        protected override string GenerateImplementation()
+        public override string Generate()
         {
             return new Instruction("movl", $"${integerLiteral}, %eax").Format();
         }
@@ -64,34 +25,40 @@ namespace Parse
         {
             return $"Int<{integerLiteral}>";
         }
-    }   
+    }
 
-    class Return : Node
+    public class Expression : Node
     {
-        private Expression? expression;
-
-        public Return(List<Token> tokens) : base(tokens)
+        private Constant? constant;
+        public Expression(Constant _constant)
         {
+            constant = _constant;
         }
 
-
-        public override bool Parse(List<Token> tokens)
+        public override string Generate()
         {
-            if (tokens.Count < 3) return false;
-            if (tokens[0].Value != "return") return false;
+            if (constant is not null)
+            {
+                return constant.Generate();
+            }
             
-            expression = new Expression(tokens.GetRange(1,1));
-            if (!expression.parseValid) return false;
-            if (tokens[2].Type != TokenType.semicolon) return false;
+            return "";  //this make sense for when we have multiple ways of declaring an expression
+        }
+    }
 
-            _tokensUsed = 2 + expression.tokensUsed;
-            return true;
+    public class Return : Node
+    {
+        private Expression expression;
+
+        public Return(Expression _expression)
+        {
+            expression = _expression;
         }
 
-        protected override string GenerateImplementation()
+        public override string Generate()
         {
             string assembly = "";
-            assembly += expression?.Generate();
+            assembly += expression.Generate();
             assembly += new Instruction("popq", "%rbp").Format();
             assembly += new Instruction("ret", "").Format();
             return assembly;
@@ -99,49 +66,48 @@ namespace Parse
 
         public override string ToString()
         {
-            return $"\n     RETURN {expression?.ToString()}";
+            return $"\n\tRETURN {expression}";
         }
     }
 
-
-    class Function : Node
+    public class Statement : Node
     {
-        public string identifier = "";
-        Return? _ret;
-
-        public Function(List<Token> tokens) : base(tokens)
+        private Return? returnStatement;
+        public Statement(Return _returnStatement)
         {
+            returnStatement = _returnStatement;
         }
 
-        public override bool Parse(List<Token> tokens)
+        public override string Generate()
         {
-            if (tokens.Count < 7) return false;
-            if (tokens[0].Value != "int") return false;
-            if (tokens[1].Type != TokenType.identifier) return false;
+            if (returnStatement is not null)
+            {
+                return returnStatement.Generate();
+            }
             
-            identifier = tokens[1].Value;
+            return "";  //this make sense for when we have multiple ways of declaring an expression
+        }
+    }
 
-            if (tokens[2].Type != TokenType.openParantheses) return false;
-            if (tokens[3].Type != TokenType.closedParentheses) return false;
-            if (tokens[4].Type != TokenType.openBrace) return false;
+    public class Function : Node
+    {
+        private string identifier;
+        Statement statement;
 
-            _ret = new Return(tokens.GetRange(5,tokens.Count - 5));
-            if (!_ret.parseValid) return false;
-
-            if (tokens[5 + _ret.tokensUsed].Type != TokenType.closeBrace) return false;
-        
-            _tokensUsed = _ret.tokensUsed + 6;
-            return true;
+        public Function(string _identifier, Statement _Statement)
+        {
+            identifier = _identifier;
+            statement = _Statement;
         }
 
-        protected override string GenerateImplementation()
+        public override string Generate()
         {
             string assembly = "";
             assembly += new Instruction(".globl",identifier).Format();
             assembly += $"\n{identifier}:";
             assembly += new Instruction("pushq", "%rbp").Format();
             assembly += new Instruction("movq", "%rsp, %rbp").Format();
-            assembly += _ret?.Generate();
+            assembly += statement.Generate();
             return assembly;
         }
 
@@ -149,7 +115,7 @@ namespace Parse
         {
             string declaration = $"FUN INT {identifier}";
             string parameters = "\n Params: ()";
-            string body = $"\n Body: {_ret?.ToString()}";
+            string body = $"\n Body: {statement}";
             
             return declaration + parameters + body;
         }

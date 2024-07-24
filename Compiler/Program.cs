@@ -19,7 +19,7 @@ namespace App
             var lex = new Lexer(testCode);
             List<Token> tokens = lex.Tokenize();
             
-            Parser program = new Parser(tokens);
+            AST program = new AST(tokens);
             string code = program.ConvertToAssembly();
             Console.WriteLine(code);
             Console.WriteLine();
@@ -38,7 +38,7 @@ namespace App
             List<Token> tokens =  lex.Tokenize();
             Console.WriteLine("Finished lexing...");
 
-            var AST = new Parser(tokens);
+            var AST = new AST(tokens);
             Console.WriteLine("Finished parsing...");
             
             string assembly = AST.ConvertToAssembly();

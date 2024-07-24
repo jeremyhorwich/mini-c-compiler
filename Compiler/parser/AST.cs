@@ -1,14 +1,15 @@
-using System.Reflection.Emit;
 using Lex;
 
 namespace Parse
 {
-    public class Parser
+    public class AST
     {
         private Function function;
 
-        public Parser(List<Token> tokens)
+        public AST(List<Token> tokens)
         {
+            IEnumerator<Token> tokenEnumerator = tokens.GetEnumerator();
+            Function program = Parsers.ParseFunction(tokenEnumerator);
             function = new Function(tokens);
         }
 
