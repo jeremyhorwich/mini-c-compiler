@@ -4,57 +4,58 @@ namespace Parse
 {
     public static class Parsers
     {
-        public delegate Node? Parser(IEnumerator<Token> tokens);
-
-        public static Node? ParseFunction(IEnumerator<Token> tokens)
+        public static Function? ParseFunction(IEnumerator<Token> tokens)
         {
-            if (!tokens.MoveNext()) return null;
-            if (tokens.Current.Value != "int") return null;
-            if (!tokens.MoveNext()) return null;
-            if (tokens.Current.Type == TokenType.identifier) return null;
-
+            if (!tokens.MoveNext() || tokens.Current.Value != "int") return null;
+            
+            if (!tokens.MoveNext() || tokens.Current.Type == TokenType.identifier) return null;
             string identifier = tokens.Current.Value;
 
-            if (!tokens.MoveNext()) return null;
-            if (tokens.Current.Type != TokenType.openParantheses) return null;
-            if (!tokens.MoveNext()) return null;
-            if (tokens.Current.Type != TokenType.closedParentheses) return null;
-            if (!tokens.MoveNext()) return null;
-            if (tokens.Current.Type != TokenType.openBrace) return null;
-            if (!tokens.MoveNext()) return null;
+            if (!tokens.MoveNext() || tokens.Current.Type != TokenType.openParantheses) return null;
+            if (!tokens.MoveNext() || tokens.Current.Type != TokenType.closedParentheses) return null;
+            if (!tokens.MoveNext() || tokens.Current.Type != TokenType.openBrace) return null;
             
-            Statement statement = ParseStatement(tokens);
+            Statement? statement = ParseStatement(tokens);
             if (statement is null) return null;
 
-            if (!tokens.MoveNext()) return null;
-            if (tokens.Current.Type != TokenType.closeBrace) return null;
+            if (!tokens.MoveNext() || tokens.Current.Type != TokenType.closeBrace) return null;
             
             return new Function(identifier, statement);
         }
 
-        public static Node? ParseStatement(IEnumerator<Token> tokens)
+        public static Statement? ParseStatement(IEnumerator<Token> tokens)
         {
-            return new Statement()
+            Return? returnStatement = ParseReturn(tokens);
+            if (returnStatement is null) return null; 
+
+            return new Statement(returnStatement);
         }
 
-        public static Node? ParseReturn(IEnumerator<Token> tokens)
+        public static Return? ParseReturn(IEnumerator<Token> tokens)
         {
-            if (tokens.Count < 3) return null;
-            if (tokens[0].Value != "return") return null;
-            
-            expression = new Expression(tokens.GetRange(1,1));
-            if (!expression.parseValid) return null;
-            if (tokens[2].Type != TokenType.semicolon) return null;
+            if (!tokens.MoveNext() || tokens.Current.Value != "return") return null;
 
-            _tokensUsed = 2 + expression.tokensUsed;
-            return true;
-        }
-        public static Node? ParseConstant(IEnumerator<Token> tokens)
-        {
-            if (tokens.Count != 1) return null;
-            if (tokens[0].Type != TokenType.integerLiteral) return null;
+            Expression? expression = ParseExpression(tokens);
+            if (expression is null) return null;
+
+            if (!tokens.MoveNext() || tokens.Current.Type != TokenType.semicolon) return null;
             
-            return new Constant(tokens[0].Value);
+            return new Return(expression);
+        }
+
+        public static Expression? ParseExpression(IEnumerator<Token> tokens)
+        {
+            if (!tokens.MoveNext()) return null;
+            Constant? constant = ParseConstant(tokens);
+            if (constant is null) return null;
+            
+            return new Expression(constant);
+        }
+
+        public static Constant? ParseConstant(IEnumerator<Token> tokens)
+        {
+            if (!tokens.MoveNext() || tokens.Current.Type != TokenType.integerLiteral) return null;            
+            return new Constant(tokens.Current.Value);
         }
 
     }
