@@ -27,6 +27,45 @@ namespace Parse
         }
     }
 
+    public class UnaryOperator : Node
+    {
+        private string operation;
+        private Expression expression;
+
+        public UnaryOperator(string _operation, Expression _expression)
+        {
+            operation = _operation;
+            expression = _expression;
+        }
+
+        public override string Generate()
+        {
+            string assembly = expression.Generate();
+            switch (operation)
+            {
+                case "-":
+                    assembly += new Instruction("neg", "%eax").Format();
+                    break;
+                case "~":
+                    assembly += new Instruction("not", "%eax").Format();
+                    break;
+                case "!": 
+                    assembly += new Instruction("cmpl", "%eax").Format();
+                    assembly += new Instruction("xor", "%eax, %eax").Format();
+                    assembly += new Instruction("sete", "%al");
+                    break;
+                default:
+                    throw new Exception("Bad operator in unary operator node (should be -,~, or !)");
+            }
+            return assembly;
+        }
+
+        public override string ToString()
+        {
+            return $"{operation}{expression}";
+        }
+    }
+
     public class Expression : Node
     {
         private Constant? constant;
