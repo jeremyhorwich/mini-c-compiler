@@ -44,6 +44,11 @@ namespace Parse
             
             return "";  //this make sense for when we have multiple ways of declaring an expression
         }
+
+        public override string ToString()
+        {
+            return $"{constant}";
+        }
     }
 
     public class Return : Node
@@ -86,6 +91,15 @@ namespace Parse
             }
             
             return "";  //this make sense for when we have multiple ways of declaring an expression
+        }
+
+        public override string ToString()
+        {
+            if (returnStatement is not null)
+            {
+                return returnStatement.ToString(); 
+            }
+            return "";
         }
     }
 

@@ -1,5 +1,4 @@
 using Lex;
-using System.Collections.Generic;
 
 namespace Parse
 {
@@ -33,18 +32,6 @@ namespace Parse
         }
     }
 
-    public class ConstantParser : Parser
-    {
-        public ConstantParser(IEnumerator<Token> _token) : base(_token)
-        {
-        }
-
-        public override Constant? Parse()
-        {
-            if (!CheckTokenType(TokenType.integerLiteral)) return null;            
-            return new Constant(tokens.Current.Value);
-        }
-    }
 
     public class FunctionParser : Parser
     {
@@ -69,82 +56,76 @@ namespace Parse
             ]);
             if (!sequenceCheck) return null;
             
-            Statement? statement = ParseStatement(tokens);
+            Statement? statement = new StatementParser(tokens).Parse();
             if (statement is null) return null;
 
             if (!CheckTokenType(TokenType.closeBrace)) return null;
             
             return new Function(identifier, statement);
         }
-
+    
     }
 
-    public static class Parsers
+    public class StatementParser : Parser
     {
-        private static bool CheckTokenValue(IEnumerator<Token> tokens, string value)
+        public StatementParser(IEnumerator<Token> _token) : base(_token)
         {
-            return !tokens.MoveNext() || tokens.Current.Value == value;
-        }
-        
-        private static bool CheckTokenType(IEnumerator<Token> tokens, TokenType tType)
-        {
-
-            return !tokens.MoveNext() || tokens.Current.Type == tType;
         }
 
-        public static Function? ParseFunction(IEnumerator<Token> tokens)
+        public override Statement? Parse()
         {
-            if (!CheckTokenValue(tokens, "int")) return null;
-            if (!CheckTokenType(tokens, TokenType.identifier)) return null;
-            string identifier = tokens.Current.Value;
-
-            if (!CheckTokenType(tokens, TokenType.openParantheses)) return null;
-            if (!CheckTokenType(tokens, TokenType.closedParentheses)) return null;
-            if (!CheckTokenType(tokens, TokenType.openBrace)) return null;
-           
-            Statement? statement = ParseStatement(tokens);
-            if (statement is null) return null;
-
-            if (!CheckTokenType(tokens, TokenType.closeBrace)) return null;
-            
-            return new Function(identifier, statement);
-        }
-
-        public static Statement? ParseStatement(IEnumerator<Token> tokens)
-        {
-            Return? returnStatement = ParseReturn(tokens);
-            if (returnStatement is null) return null; 
+            Return? returnStatement = new ReturnParser(tokens).Parse();
+            if (returnStatement is null) return null;
 
             return new Statement(returnStatement);
         }
+    }
 
-        public static Return? ParseReturn(IEnumerator<Token> tokens)
+    public class ReturnParser : Parser
+    {
+        public ReturnParser(IEnumerator<Token> _token) : base(_token)
         {
-            if (!tokens.MoveNext() || tokens.Current.Value != "return") return null;
+        }
 
-            Expression? expression = ParseExpression(tokens);
-            if (expression is null) return null;
-
-            if (!tokens.MoveNext() || tokens.Current.Type != TokenType.semicolon) return null;
+        public override Return? Parse()
+        {
+            if (!CheckTokenValue("return")) return null;
             
+            Expression? expression = new ExpressionParser(tokens).Parse();
+            if (expression is null) return null;
+            
+            if (!CheckTokenType(TokenType.semicolon)) return null;
+
             return new Return(expression);
         }
+    }
 
-        public static Expression? ParseExpression(IEnumerator<Token> tokens)
+    public class ExpressionParser : Parser
+    {
+        public ExpressionParser(IEnumerator<Token> _token) : base(_token)
         {
-            if (!tokens.MoveNext()) return null;
-            Constant? constant = ParseConstant(tokens);
-            if (constant is null) return null;
-            
-            return new Expression(constant);
         }
 
-        public static Constant? ParseConstant(IEnumerator<Token> tokens)
+        public override Expression? Parse()
         {
-            if (!tokens.MoveNext() || tokens.Current.Type != TokenType.integerLiteral) return null;            
+            Constant? constant = new ConstantParser(tokens).Parse();
+            if (constant is null) return null;
+            return new Expression(constant);
+
+        }
+    }
+
+    public class ConstantParser : Parser
+    {
+        public ConstantParser(IEnumerator<Token> _token) : base(_token)
+        {
+        }
+
+        public override Constant? Parse()
+        {
+            if (!CheckTokenType(TokenType.integerLiteral)) return null;            
             return new Constant(tokens.Current.Value);
         }
-
     }
 }
     
