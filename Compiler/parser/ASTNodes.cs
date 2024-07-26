@@ -69,19 +69,24 @@ namespace Parse
     public class Expression : Node
     {
         private Constant? constant;
+        private UnaryOperator? unaryOperator;
+
         public Expression(Constant _constant)
         {
             constant = _constant;
         }
+        
+        public Expression(UnaryOperator _unaryOperator)
+        {
+            unaryOperator = _unaryOperator;
+        }
 
         public override string Generate()
         {
-            if (constant is not null)
-            {
-                return constant.Generate();
-            }
+            if (constant is not null) return constant.Generate();
+            if (unaryOperator is not null) return unaryOperator.Generate();
             
-            return "";  //this make sense for when we have multiple ways of declaring an expression
+            return "";
         }
 
         public override string ToString()
