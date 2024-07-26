@@ -1,5 +1,3 @@
-using Lex;
-using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 
 namespace Lex 
@@ -8,12 +6,15 @@ namespace Lex
     {
         keyword,
         openParantheses,
-        closedParentheses,
+        closeParentheses,
         openBrace,
         closeBrace,
         integerLiteral,
         semicolon,
         identifier,
+        negation,
+        bitwiseComplement,
+        logicalNegation,
         none
     }
 
@@ -31,10 +32,13 @@ namespace Lex
             { TokenType.openBrace, new Regex(@"^{") },
             { TokenType.closeBrace, new Regex(@"^}") },
             { TokenType.openParantheses, new Regex(@"^\(") },
-            { TokenType.closedParentheses, new Regex(@"^\)") },
+            { TokenType.closeParentheses, new Regex(@"^\)") },
             { TokenType.semicolon, new Regex(@"^;") },
             { TokenType.identifier, new Regex(@"^[a-zA-Z]\w*") },
-            { TokenType.integerLiteral, new Regex(@"^[0-9]+") }
+            { TokenType.integerLiteral, new Regex(@"^[0-9]+") },
+            { TokenType.negation, new Regex(@"^-") },
+            { TokenType.bitwiseComplement, new Regex(@"^~") },
+            { TokenType.logicalNegation, new Regex(@"^!") }
         };
 
         private static List<Regex> _keywordPatterns = new List<Regex>

@@ -51,7 +51,7 @@ namespace Parse
 
             sequenceCheck = CheckSequence([
                 CheckTokenType(TokenType.openParantheses),
-                CheckTokenType(TokenType.closedParentheses),
+                CheckTokenType(TokenType.closeParentheses),
                 CheckTokenType(TokenType.openBrace)
             ]);
             if (!sequenceCheck) return null;
