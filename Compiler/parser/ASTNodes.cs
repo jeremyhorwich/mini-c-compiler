@@ -7,7 +7,6 @@ namespace Parse
         public abstract string Generate();
     }
 
-
     public class Constant : Node
     {
         private string integerLiteral;
