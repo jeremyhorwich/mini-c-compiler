@@ -1,4 +1,5 @@
 using Lex;
+using CompilerUtility;
 
 namespace Parse
 {
@@ -8,8 +9,8 @@ namespace Parse
 
         public AST(List<Token> tokens)
         {
-            IEnumerator<Token> tokenEnumerator = tokens.GetEnumerator();
-            function = new FunctionParser(tokenEnumerator).Parse();
+            SmartList<Token> smartTokenList = new SmartList<Token>(tokens);
+            function = new FunctionParser(smartTokenList).Parse();
         }
 
         public override string ToString()

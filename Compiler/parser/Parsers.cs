@@ -1,11 +1,12 @@
+using CompilerUtility;
 using Lex;
 
 namespace Parse
 {
     public abstract class Parser
     {
-        protected IEnumerator<Token> tokens;
-        public Parser(IEnumerator<Token> _tokens)
+        protected SmartList<Token> tokens;
+        public Parser(SmartList<Token> _tokens)
         {
             tokens = _tokens;
         }
@@ -35,16 +36,18 @@ namespace Parse
 
     public class FunctionParser : Parser
     {
-        public FunctionParser(IEnumerator<Token> _token) : base(_token)
+        public FunctionParser(SmartList<Token> _token) : base(_token)
         {
         }
         
         public override Function? Parse()
         {
+
             bool sequenceCheck = CheckSequence([
                 CheckTokenValue("int"),
                 CheckTokenType(TokenType.identifier),
             ]);
+            Console.WriteLine(tokens.Current.Value);
             if (!sequenceCheck) return null;
             
                 string identifier = tokens.Current.Value;
@@ -68,7 +71,7 @@ namespace Parse
 
     public class StatementParser : Parser
     {
-        public StatementParser(IEnumerator<Token> _token) : base(_token)
+        public StatementParser(SmartList<Token> _token) : base(_token)
         {
         }
 
@@ -83,7 +86,7 @@ namespace Parse
 
     public class ReturnParser : Parser
     {
-        public ReturnParser(IEnumerator<Token> _token) : base(_token)
+        public ReturnParser(SmartList<Token> _token) : base(_token)
         {
         }
 
@@ -102,7 +105,7 @@ namespace Parse
 
     public class ExpressionParser : Parser
     {
-        public ExpressionParser(IEnumerator<Token> _token) : base(_token)
+        public ExpressionParser(SmartList<Token> _token) : base(_token)
         {
         }
 
@@ -117,7 +120,7 @@ namespace Parse
 
     public class ConstantParser : Parser
     {
-        public ConstantParser(IEnumerator<Token> _token) : base(_token)
+        public ConstantParser(SmartList<Token> _token) : base(_token)
         {
         }
 
