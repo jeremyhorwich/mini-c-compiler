@@ -1,4 +1,4 @@
-using System.Net.Http.Headers;
+using Lex;
 
 namespace Parse
 {
@@ -28,27 +28,25 @@ namespace Parse
 
     public class UnaryOperator : Node
     {
-        private string operation;
-        private Expression expression;
-
-        public UnaryOperator(string _operation, Expression _expression)
+        private TokenType operation;
+        
+        public UnaryOperator(TokenType _operation)
         {
             operation = _operation;
-            expression = _expression;
         }
 
         public override string Generate()
         {
-            string assembly = expression.Generate();
+            string assembly = "";
             switch (operation)
             {
-                case "-":
+                case TokenType.negation:
                     assembly += new Instruction("neg", "%eax").Format();
                     break;
-                case "~":
+                case TokenType.bitwiseComplement:
                     assembly += new Instruction("not", "%eax").Format();
                     break;
-                case "!": 
+                case TokenType.logicalNegation: 
                     assembly += new Instruction("cmpl", "%eax").Format();
                     assembly += new Instruction("xor", "%eax, %eax").Format();
                     assembly += new Instruction("sete", "%al");
@@ -61,7 +59,7 @@ namespace Parse
 
         public override string ToString()
         {
-            return $"{operation}{expression}";
+            return $"{operation}";
         }
     }
 
@@ -69,15 +67,17 @@ namespace Parse
     {
         private Constant? constant;
         private UnaryOperator? unaryOperator;
+        private Expression? expression;
 
         public Expression(Constant _constant)
         {
             constant = _constant;
         }
         
-        public Expression(UnaryOperator _unaryOperator)
+        public Expression(UnaryOperator _unaryOperator, Expression _expression)
         {
             unaryOperator = _unaryOperator;
+            expression = _expression;
         }
 
         public override string Generate()

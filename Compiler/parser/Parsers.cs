@@ -16,11 +16,30 @@ namespace Parse
         {
             return tokens.MoveNext() && tokens.Current.Value == value;
         }
+
+        protected bool CheckTokenValue(string[] values)
+        {
+            if (!tokens.MoveNext()) return false;
+            foreach (string value in values)
+            {
+                if (tokens.Current.Value == value) return true;
+            }
+            return false;
+        }
         
         protected bool CheckTokenType(TokenType tType)
         {
-
             return tokens.MoveNext() && tokens.Current.Type == tType;
+        }
+        
+        protected bool CheckTokenType(TokenType[] tTypes)
+        {
+            if (!tokens.MoveNext()) return false;
+            foreach (TokenType tType in tTypes)
+            {
+                if (tokens.Current.Type == tType) return true;
+            }
+            return false;
         }
 
         protected bool CheckSequence(bool[] parseConditions)
@@ -111,10 +130,40 @@ namespace Parse
 
         public override Expression? Parse()
         {
+            var tokensCopy = tokens.Clone();
+            UnaryOperator? unaryOperation = new UnaryOperatorParser(tokens).Parse();
+            Expression? expression = new ExpressionParser(tokens).Parse();
+            if (unaryOperation is not null && expression is not null) 
+            {
+                return new Expression(unaryOperation, expression);
+            }
+            
             Constant? constant = new ConstantParser(tokens).Parse();
-            if (constant is null) return null;
-            return new Expression(constant);
+            if (constant is not null) return new Expression(constant);
 
+            tokens = tokensCopy;
+            return null;
+        }
+    }
+
+    public class UnaryOperatorParser : Parser
+    {
+        TokenType[] operators = [
+            TokenType.bitwiseComplement,
+            TokenType.negation,
+            TokenType.logicalNegation
+        ];
+
+        public UnaryOperatorParser(SmartList<Token> _token) : base(_token)
+        {
+        }
+
+        public override UnaryOperator? Parse()
+        {
+            var tokensCopy = tokens.Clone();
+            if (!CheckTokenType(operators)) return new UnaryOperator(tokens.Current.Type);
+            tokens = tokensCopy;
+            return null;
         }
     }
 
@@ -126,8 +175,10 @@ namespace Parse
 
         public override Constant? Parse()
         {
-            if (!CheckTokenType(TokenType.integerLiteral)) return null;            
-            return new Constant(tokens.Current.Value);
+            var tokensCopy = tokens.Clone();
+            if (CheckTokenType(TokenType.integerLiteral)) return new Constant(tokens.Current.Value);
+            tokens = tokensCopy;
+            return null;
         }
     }
 }
