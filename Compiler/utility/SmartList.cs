@@ -1,9 +1,12 @@
+using System.Collections.Generic;
+
 namespace CompilerUtility
 {
     public class SmartList<T>
     {
         private List<T> list;
         private int pointer = -1;
+        private Stack<int> pointerStates = new Stack<int>();
         public T Current
         {
             get
@@ -19,12 +22,7 @@ namespace CompilerUtility
         public SmartList(List<T> _list)
         {
             list = _list;
-        }
-
-        private SmartList(List<T> _list, int pointerValue)
-        {
-            list = _list;
-            pointer = pointerValue;
+            pointerStates.Push(-1);
         }
 
         public bool MoveNext()
@@ -33,9 +31,19 @@ namespace CompilerUtility
             return pointer < list.Count;
         }
 
-        public SmartList<T> Clone()
+        public void SaveState()
         {
-            return new SmartList<T>(list, pointer);
+            pointerStates.Push(pointer);
+        }
+
+        public void RestoreState()
+        {
+            pointer = pointerStates.Pop();
+        }
+
+        public void DeleteState()
+        {
+            pointerStates.Pop();
         }
     }
 }

@@ -130,18 +130,22 @@ namespace Parse
 
         public override Expression? Parse()
         {
-            var tokensCopy = tokens.Clone();
+            tokens.SaveState();
             UnaryOperator? unaryOperation = new UnaryOperatorParser(tokens).Parse();
             Expression? expression = new ExpressionParser(tokens).Parse();
             if (unaryOperation is not null && expression is not null) 
             {
+                tokens.DeleteState();
                 return new Expression(unaryOperation, expression);
             }
             
             Constant? constant = new ConstantParser(tokens).Parse();
-            if (constant is not null) return new Expression(constant);
-
-            tokens = tokensCopy;
+            if (constant is not null)
+            {
+                tokens.DeleteState();
+                return new Expression(constant);
+            }
+            tokens.RestoreState();
             return null;
         }
     }
@@ -160,9 +164,13 @@ namespace Parse
 
         public override UnaryOperator? Parse()
         {
-            var tokensCopy = tokens.Clone();
-            if (!CheckTokenType(operators)) return new UnaryOperator(tokens.Current.Type);
-            tokens = tokensCopy;
+            tokens.SaveState();
+            if (!CheckTokenType(operators)) 
+            {
+                tokens.DeleteState();
+                return new UnaryOperator(tokens.Current.Type);
+            }    
+            tokens.RestoreState();
             return null;
         }
     }
@@ -175,9 +183,13 @@ namespace Parse
 
         public override Constant? Parse()
         {
-            var tokensCopy = tokens.Clone();
-            if (CheckTokenType(TokenType.integerLiteral)) return new Constant(tokens.Current.Value);
-            tokens = tokensCopy;
+            tokens.SaveState();
+            if (CheckTokenType(TokenType.integerLiteral)) 
+            {
+                tokens.DeleteState();
+                return new Constant(tokens.Current.Value);
+            }
+            tokens.RestoreState();
             return null;
         }
     }
