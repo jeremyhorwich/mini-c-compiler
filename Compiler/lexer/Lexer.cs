@@ -25,6 +25,7 @@ namespace Lex
                     position++;
                     line++;
                     column = 0;
+                    tokens.Add(nextToken);
                     continue;
                 }
                 if (nextToken.Type == TokenType.whiteSpace)
