@@ -53,6 +53,7 @@ namespace Lex
                 column += nextToken.Length;
                 tokens.Add(nextToken);
             }
+            tokens.Add(new Token(TokenType.endOfFile));
 
             return tokens;
         }

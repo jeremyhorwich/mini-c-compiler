@@ -17,6 +17,7 @@ namespace Lex
         logicalNegation,
         newLine,
         whiteSpace,
+        endOfFile,
         none
     }
 
@@ -55,6 +56,12 @@ namespace Lex
         {
             _value = " ";       //Space instead of empty string because Length depends on Value
             FindMatch(input);
+        }
+
+        public Token(TokenType tokenType)
+        {
+            _value = " ";
+            _type = tokenType;
         }
 
         public override string ToString()
