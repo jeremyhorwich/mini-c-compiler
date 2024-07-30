@@ -30,20 +30,22 @@ namespace Lex
         private TokenType _type;
         public TokenType Type => _type;
 
-        private static Dictionary<TokenType, Regex> _regexPatterns = new Dictionary<TokenType, Regex>
+        private static Dictionary<Regex, TokenType> _regexPatterns = new Dictionary<Regex, TokenType>
         {
-            { TokenType.openBrace, new Regex(@"^{") },
-            { TokenType.closeBrace, new Regex(@"^}") },
-            { TokenType.openParantheses, new Regex(@"^\(") },
-            { TokenType.closeParentheses, new Regex(@"^\)") },
-            { TokenType.semicolon, new Regex(@"^;") },
-            { TokenType.identifier, new Regex(@"^[a-zA-Z]\w*") },
-            { TokenType.integerLiteral, new Regex(@"^[0-9]+") },
-            { TokenType.negation, new Regex(@"^-") },
-            { TokenType.bitwiseComplement, new Regex(@"^~") },
-            { TokenType.logicalNegation, new Regex(@"^!") },
-            { TokenType.newLine, new Regex(@"^\r\n|\n") },
-            { TokenType.whiteSpace, new Regex(@"^\s+") }
+            { new Regex(@"^{"), TokenType.openBrace },
+            { new Regex(@"^}"), TokenType.closeBrace },
+            { new Regex(@"^\("), TokenType.openParantheses },
+            { new Regex(@"^\)"), TokenType.closeParentheses },
+            { new Regex(@"^;"), TokenType.semicolon },
+            { new Regex(@"^[a-zA-Z]\w*"), TokenType.identifier },
+            { new Regex(@"^[0-9]+"), TokenType.integerLiteral },
+            { new Regex(@"^-"), TokenType.negation },
+            { new Regex(@"^~"), TokenType.bitwiseComplement },
+            { new Regex(@"^!"), TokenType.logicalNegation },
+            { new Regex(@"^\r\n|\n"), TokenType.newLine },
+            { new Regex(@"^\s+"), TokenType.whiteSpace },
+            { new Regex(@"^//.*$"), TokenType.whiteSpace },     //Single-line comments
+            { new Regex(@"/\*[\s\S]*?\*/"), TokenType.whiteSpace }      //Multi-line comments
         };
 
         private static List<Regex> _keywordPatterns = new List<Regex>
@@ -84,10 +86,10 @@ namespace Lex
                         
             foreach (var kvp in _regexPatterns)
             {
-                Match match = kvp.Value.Match(input);
+                Match match = kvp.Key.Match(input);
                 if (match.Success)
                 {
-                    _type = kvp.Key;
+                    _type = kvp.Value;
                     _value = match.Value;
                     return;
                 }
