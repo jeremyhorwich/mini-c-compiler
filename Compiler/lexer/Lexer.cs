@@ -11,33 +11,37 @@ namespace Lex
 
         public List<Token> Tokenize()
         {
-            int _position = 0;
+            int position = 0;
+            int column = 1;
             int line = 1;
             List<Token> tokens = new List<Token>();
 
-            while (_position < _input.Length)
+            while (position < _input.Length)
             {
-                var nextToken = new Token(_input.Substring(_position));
+                var nextToken = new Token(_input.Substring(position));
                 if (nextToken.Type == TokenType.newLine)
                 {
-                    _position++;
+                    position++;
                     line++;
+                    column = 0;
                     continue;
                 }
                 try 
                 {
                     if (nextToken.Type == TokenType.none)
                     {
-                        string message = $"Could not scan token {nextToken.Value} at line {line}";
+                        string message = $"Could not scan token {nextToken.Value} at line {line}, column {column}";
                         throw new Exception(message);
                     }
                 }
                 catch
                 {
-                    _position++;
+                    position++;
+                    column++;
                     continue;
                 }
-                _position += nextToken.Length;
+                position += nextToken.Length;
+                column += nextToken.Length;
                 tokens.Add(nextToken);
             }
 
