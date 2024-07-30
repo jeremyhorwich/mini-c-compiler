@@ -3,6 +3,7 @@ namespace Lex
     public class Lexer
     {
         private string _input;
+        public bool hadError { get; private set; } = false;
 
         public Lexer(string input)
         {
@@ -30,6 +31,7 @@ namespace Lex
                 {
                     if (nextToken.Type == TokenType.none)
                     {
+                        hadError = true;
                         string message = $"Could not scan token {nextToken.Value} at line {line}, column {column}";
                         throw new Exception(message);
                     }
