@@ -27,6 +27,12 @@ namespace Lex
                     column = 0;
                     continue;
                 }
+                if (nextToken.Type == TokenType.whiteSpace)
+                {
+                    position++;
+                    column++;
+                    continue;
+                }
                 try 
                 {
                     if (nextToken.Type == TokenType.none)
