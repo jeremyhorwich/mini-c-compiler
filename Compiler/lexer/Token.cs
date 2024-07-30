@@ -47,6 +47,7 @@ namespace Lex
             { new Regex(@"^//.*$"), TokenType.whiteSpace },     //Single-line comments
             { new Regex(@"/\*[\s\S]*?\*/"), TokenType.whiteSpace }      //Multi-line comments
         };
+        //TODO string literals (finite state machine?)
 
         private static List<Regex> _keywordPatterns = new List<Regex>
         {
