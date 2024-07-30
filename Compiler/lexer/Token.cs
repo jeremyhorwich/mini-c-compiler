@@ -15,6 +15,8 @@ namespace Lex
         negation,
         bitwiseComplement,
         logicalNegation,
+        newLine,
+        whiteSpace,
         none
     }
 
@@ -38,7 +40,9 @@ namespace Lex
             { TokenType.integerLiteral, new Regex(@"^[0-9]+") },
             { TokenType.negation, new Regex(@"^-") },
             { TokenType.bitwiseComplement, new Regex(@"^~") },
-            { TokenType.logicalNegation, new Regex(@"^!") }
+            { TokenType.logicalNegation, new Regex(@"^!") },
+            { TokenType.newLine, new Regex(@"^\r\n|\n") },
+            { TokenType.whiteSpace, new Regex(@"^\s+") }
         };
 
         private static List<Regex> _keywordPatterns = new List<Regex>
@@ -49,7 +53,7 @@ namespace Lex
 
         public Token(string input)
         {
-            _value = " ";
+            _value = " ";       //Space instead of empty string because Length depends on Value
             FindMatch(input);
         }
 
