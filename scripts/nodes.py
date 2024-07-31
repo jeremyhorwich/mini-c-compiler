@@ -39,13 +39,13 @@ def generate_class(classname: str, inherit_from: str, field_types: list[str], fi
     field_declarations = "\n" + "\n".join(f"\tpublic {ft} {f};" for ft, f in zip(field_types, fields))
 
     constructor_params = ", ".join(f"{ft} _{f}" for ft, f in zip(field_types, fields))
-    constructor_declaration = f"\n\n\t{classname}({constructor_params})"
+    constructor_declaration = f"\n\n\tpublic {classname}({constructor_params})"
 
     constructor_body = "\n".join(f"\t\t{f} = _{f};" for f in fields)
     constructor_body = f"\n\t{{\n{constructor_body}\n\t}}"
 
-    accept_function = "\n\tpublic override void Accept(IVisitor visitor)"
-    accept_function += "\n\t{\n\t\tvisitor.Visit(this);\n\t}"
+    accept_function = "\n\tpublic override T Accept<T>(IVisitor visitor)"
+    accept_function += "\n\t{\n\t\treturn visitor.Visit<T>(this);\n\t}"
 
     generated = f"{class_declaration}{field_declarations}"
     generated += f"{constructor_declaration}{constructor_body}\n"
