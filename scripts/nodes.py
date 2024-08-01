@@ -44,7 +44,7 @@ def generate_class(classname: str, inherit_from: str, field_types: list[str], fi
     constructor_body = "\n".join(f"\t\t{f} = _{f};" for f in fields)
     constructor_body = f"\n\t{{\n{constructor_body}\n\t}}"
 
-    accept_function = "\n\tpublic override T Accept<T>(IVisitor visitor)"
+    accept_function = "\n\tpublic T Accept<T>(IVisitor visitor)"
     accept_function += "\n\t{\n\t\treturn visitor.Visit<T>(this);\n\t}"
 
     generated = f"{class_declaration}{field_declarations}"
@@ -54,6 +54,9 @@ def generate_class(classname: str, inherit_from: str, field_types: list[str], fi
     return generated
 
 generate_file([
-    "BinaryExpression < Expression : Expression left, Token operator, Expression right",
-    "UnaryExpression < Expression : Expression expression, Token operator"
+    "Function < q : string Identifier, Statement statement",
+    "Statement < q : q q",
+    "ReturnStatement < Statement : Expression expression",
+    "Expression < q : q q",
+    "Constant < Statement : int integerLiteral"
 ])

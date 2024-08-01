@@ -1,0 +1,77 @@
+public class Function : q 
+{
+	public string Identifier;
+	public Statement statement;
+
+	public Function(string _Identifier, Statement _statement)
+	{
+		Identifier = _Identifier;
+		statement = _statement;
+	}
+
+	public override T Accept<T>(IVisitor visitor)
+	{
+		return visitor.Visit<T>(this);
+	}
+}
+
+public class Statement : q 
+{
+	public q q;
+
+	public Statement(q _q)
+	{
+		q = _q;
+	}
+
+	public override T Accept<T>(IVisitor visitor)
+	{
+		return visitor.Visit<T>(this);
+	}
+}
+
+public class ReturnStatement : Statement 
+{
+	public Expression expression;
+
+	public ReturnStatement(Expression _expression)
+	{
+		expression = _expression;
+	}
+
+	public override T Accept<T>(IVisitor visitor)
+	{
+		return visitor.Visit<T>(this);
+	}
+}
+
+public class Expression : q 
+{
+	public q q;
+
+	public Expression(q _q)
+	{
+		q = _q;
+	}
+
+	public override T Accept<T>(IVisitor visitor)
+	{
+		return visitor.Visit<T>(this);
+	}
+}
+
+public class Constant : Statement 
+{
+	public int integerLiteral;
+
+	public Constant(int _integerLiteral)
+	{
+		integerLiteral = _integerLiteral;
+	}
+
+	public override T Accept<T>(IVisitor visitor)
+	{
+		return visitor.Visit<T>(this);
+	}
+}
+
