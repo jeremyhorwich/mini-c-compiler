@@ -1,18 +1,19 @@
 using CompilerUtility;
+using Tree;
 using Lex;
 
 namespace Parse
 {
     public class Parser
     {
-        protected List<Token> Tokens;
-        protected int Current = 0;
+        private List<Token> Tokens;
+        private int Current = 0;
         public Parser(List<Token> _tokens)
         {
             Tokens = _tokens;
         }
 
-        protected bool Match(TokenType[] types)
+        private bool Match(TokenType[] types)
         {
             foreach (TokenType type in types)
             {
@@ -25,7 +26,7 @@ namespace Parse
             return false;
         }
 
-        protected bool Match(string[] values)
+        private bool Match(string[] values)
         {
             foreach (string value in values)
             {
@@ -38,126 +39,101 @@ namespace Parse
             return false;
         }
 
-        protected bool Check(TokenType type)
+        private bool Check(TokenType type)
         {
             if (EndReached()) return false;
             return Tokens[Current].Type == type;
         }
 
-        protected bool Check(string value)
+        private bool Check(string value)
         {
             if (EndReached()) return false;
             return Tokens[Current].Value == value;
         }
 
-        protected bool EndReached()
+        private bool EndReached()
         {
             return Peek().Type == TokenType.endOfFile;
         }
         
-        protected Token Peek()
+        private Token Peek()
         {
             return Tokens[Current];
         }
 
-        protected Token Advance()
+        private Token Advance()
         {
             if (!EndReached()) Current++;
             return Previous();
         }
 
-        protected Token Previous()
+        private Token Consume(TokenType type, string message)
+        {
+            if (Check(type)) return Advance();
+            throw new Exception(message);    //TODO
+        }
+
+        private Token Consume(string value, string message)
+        {
+            if (Check(value)) return Advance();
+            throw new Exception(message);   //TODO
+        }
+
+        private Token Previous()
         {
             return Tokens[Current - 1];
-        }
-    }
+        } 
 
-
-    public class FunctionParser : Parser
-    {
-        public FunctionParser(SmartList<Token> _token) : base(_token)
+        public Program Parse()
         {
+            try
+            {
+                Function function = MatchFunction();
+                return new Program(function);
+            }
+            catch   //TODO
+            {
+                return null;
+            }
         }
-        
-        public override Function? Parse()
+
+        private Function MatchFunction()
         {
+            Consume("int", "Expected int");
 
-            bool sequenceCheck = CheckSequence([
-                CheckTokenValue("int"),
-                CheckTokenType(TokenType.identifier),
-            ]);
-            Console.WriteLine(Tokens.Current.Value);
-            if (!sequenceCheck) return null;
-            
-                string identifier = Tokens.Current.Value;
+            string identifier = Consume(TokenType.identifier, "Expected identifier after int").Value;
 
-            sequenceCheck = CheckSequence([
-                CheckTokenType(TokenType.openParantheses),
-                CheckTokenType(TokenType.closeParentheses),
-                CheckTokenType(TokenType.openBrace)
-            ]);
-            if (!sequenceCheck) return null;
-            
-            Statement? statement = new StatementParser(Tokens).Parse();
-            if (statement is null) return null;
+            Consume(TokenType.openParantheses, "Expected ( after" + identifier);
+            Consume(TokenType.closeParentheses, "Expected ) after (");
+            Consume(TokenType.openBrace, "Expected { after )");
 
-            if (!CheckTokenType(TokenType.closeBrace)) return null;
+            Statement statement = MatchStatement();
             
+            Consume(TokenType.closeBrace, "Expected } at function end");
+
             return new Function(identifier, statement);
         }
-    
-    }
 
-    public class StatementParser : Parser
-    {
-        public StatementParser(SmartList<Token> _token) : base(_token)
+        private Statement MatchStatement()
         {
+            if (Match(["return"])) return MatchReturnStatement();
+            return null;
         }
 
-        public override Statement? Parse()
+        private Statement MatchReturnStatement()
         {
-            Return? returnStatement = new ReturnParser(Tokens).Parse();
-            if (returnStatement is null) return null;
-
-            return new Statement(returnStatement);
-        }
-    }
-
-    public class ReturnParser : Parser
-    {
-        public ReturnParser(SmartList<Token> _token) : base(_token)
-        {
+            Expression expression = MatchExpression();
+            Consume(TokenType.semicolon, "Expected semicolon at end of statement");
+            return new ReturnStatement(expression);
         }
 
-        public override Return? Parse()
+        private Expression MatchExpression()
         {
-            if (!CheckTokenValue("return")) return null;
-            
-            Expression? expression = new ExpressionParser(Tokens).Parse();
-            if (expression is null) return null;
-            
-            if (!CheckTokenType(TokenType.semicolon)) return null;
-
-            return new Return(expression);
+            return MatchConstant();
         }
     }
 
-    public class ExpressionParser : Parser
-    {
-        public ExpressionParser(SmartList<Token> _token) : base(_token)
-        {
-        }
-
-        public override Expression? Parse()
-        {
-            Tokens.SaveState();
-            UnaryOperator? unaryOperation = new UnaryOperatorParser(Tokens).Parse();
-            Expression? expression = new ExpressionParser(Tokens).Parse();
-            if (unaryOperation is not null && expression is not null) 
-            {
-                Tokens.DeleteState();
-                return new Expression(unaryOperation, expression);
-            }
+   
             
             Constant? constant = new ConstantParser(Tokens).Parse();
             if (constant is not null)
@@ -165,31 +141,6 @@ namespace Parse
                 Tokens.DeleteState();
                 return new Expression(constant);
             }
-            Tokens.RestoreState();
-            return null;
-        }
-    }
-
-    public class UnaryOperatorParser : Parser
-    {
-        TokenType[] operators = [
-            TokenType.bitwiseComplement,
-            TokenType.negation,
-            TokenType.logicalNegation
-        ];
-
-        public UnaryOperatorParser(SmartList<Token> _token) : base(_token)
-        {
-        }
-
-        public override UnaryOperator? Parse()
-        {
-            Tokens.SaveState();
-            if (!CheckTokenType(operators)) 
-            {
-                Tokens.DeleteState();
-                return new UnaryOperator(Tokens.Current.Type);
-            }    
             Tokens.RestoreState();
             return null;
         }
