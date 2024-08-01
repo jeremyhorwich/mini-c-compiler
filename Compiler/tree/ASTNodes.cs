@@ -9,6 +9,20 @@ namespace Tree
     {
     }
 
+    public class Program : Node
+    {
+        public Function function;
+        public Program(Function _function)
+        {
+            function = _function;
+        }
+
+        public T Accept<T>(IVisitor visitor)
+        {
+            return visitor.Visit<T>(this);
+        }
+    }
+
     public class Function : Node 
     {
         public string identifier;
