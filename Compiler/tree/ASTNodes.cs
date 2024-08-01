@@ -65,17 +65,17 @@ namespace Tree
 
     public abstract class Expression : Node
     {
-        public T Accept<T>(IVisitor visitor)
+        public virtual T Accept<T>(IVisitor visitor)
         {
             return visitor.Visit<T>(this);
         }
     }
 
-    public class Constant : Statement 
+    public class Constant : Expression 
     {
-        public int integerLiteral;
+        public string integerLiteral;
 
-        public Constant(int _integerLiteral)
+        public Constant(string _integerLiteral)
         {
             integerLiteral = _integerLiteral;
         }
