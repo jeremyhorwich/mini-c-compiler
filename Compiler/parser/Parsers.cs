@@ -3,52 +3,72 @@ using Lex;
 
 namespace Parse
 {
-    public abstract class Parser
+    public class Parser
     {
-        protected SmartList<Token> tokens;
-        public Parser(SmartList<Token> _tokens)
+        protected List<Token> Tokens;
+        protected int Current = 0;
+        public Parser(List<Token> _tokens)
         {
-            tokens = _tokens;
+            Tokens = _tokens;
         }
 
-        public abstract Node? Parse();
-        protected bool CheckTokenValue(string value)
+        protected bool Match(TokenType[] types)
         {
-            return tokens.MoveNext() && tokens.Current.Value == value;
+            foreach (TokenType type in types)
+            {
+                if (!Check(type))
+                {
+                    Advance();
+                    return true;
+                }
+            }
+            return false;
         }
 
-        protected bool CheckTokenValue(string[] values)
+        protected bool Match(string[] values)
         {
-            if (!tokens.MoveNext()) return false;
             foreach (string value in values)
             {
-                if (tokens.Current.Value == value) return true;
-            }
-            return false;
-        }
-        
-        protected bool CheckTokenType(TokenType tType)
-        {
-            return tokens.MoveNext() && tokens.Current.Type == tType;
-        }
-        
-        protected bool CheckTokenType(TokenType[] tTypes)
-        {
-            if (!tokens.MoveNext()) return false;
-            foreach (TokenType tType in tTypes)
-            {
-                if (tokens.Current.Type == tType) return true;
+                if (!Check(value))
+                {
+                    Advance();
+                    return true;
+                }
             }
             return false;
         }
 
-        protected bool CheckSequence(bool[] parseConditions)
+        protected bool Check(TokenType type)
         {
-            foreach(var condition in parseConditions)
-            {
-                if (!condition) return false;
-            }
-            return true;
+            if (EndReached()) return false;
+            return Tokens[Current].Type == type;
+        }
+
+        protected bool Check(string value)
+        {
+            if (EndReached()) return false;
+            return Tokens[Current].Value == value;
+        }
+
+        protected bool EndReached()
+        {
+            return Peek().Type == TokenType.endOfFile;
+        }
+        
+        protected Token Peek()
+        {
+            return Tokens[Current];
+        }
+
+        protected Token Advance()
+        {
+            if (!EndReached()) Current++;
+            return Previous();
+        }
+
+        protected Token Previous()
+        {
+            return Tokens[Current - 1];
         }
     }
 
@@ -66,10 +86,10 @@ namespace Parse
                 CheckTokenValue("int"),
                 CheckTokenType(TokenType.identifier),
             ]);
-            Console.WriteLine(tokens.Current.Value);
+            Console.WriteLine(Tokens.Current.Value);
             if (!sequenceCheck) return null;
             
-                string identifier = tokens.Current.Value;
+                string identifier = Tokens.Current.Value;
 
             sequenceCheck = CheckSequence([
                 CheckTokenType(TokenType.openParantheses),
@@ -78,7 +98,7 @@ namespace Parse
             ]);
             if (!sequenceCheck) return null;
             
-            Statement? statement = new StatementParser(tokens).Parse();
+            Statement? statement = new StatementParser(Tokens).Parse();
             if (statement is null) return null;
 
             if (!CheckTokenType(TokenType.closeBrace)) return null;
@@ -96,7 +116,7 @@ namespace Parse
 
         public override Statement? Parse()
         {
-            Return? returnStatement = new ReturnParser(tokens).Parse();
+            Return? returnStatement = new ReturnParser(Tokens).Parse();
             if (returnStatement is null) return null;
 
             return new Statement(returnStatement);
@@ -113,7 +133,7 @@ namespace Parse
         {
             if (!CheckTokenValue("return")) return null;
             
-            Expression? expression = new ExpressionParser(tokens).Parse();
+            Expression? expression = new ExpressionParser(Tokens).Parse();
             if (expression is null) return null;
             
             if (!CheckTokenType(TokenType.semicolon)) return null;
@@ -130,22 +150,22 @@ namespace Parse
 
         public override Expression? Parse()
         {
-            tokens.SaveState();
-            UnaryOperator? unaryOperation = new UnaryOperatorParser(tokens).Parse();
-            Expression? expression = new ExpressionParser(tokens).Parse();
+            Tokens.SaveState();
+            UnaryOperator? unaryOperation = new UnaryOperatorParser(Tokens).Parse();
+            Expression? expression = new ExpressionParser(Tokens).Parse();
             if (unaryOperation is not null && expression is not null) 
             {
-                tokens.DeleteState();
+                Tokens.DeleteState();
                 return new Expression(unaryOperation, expression);
             }
             
-            Constant? constant = new ConstantParser(tokens).Parse();
+            Constant? constant = new ConstantParser(Tokens).Parse();
             if (constant is not null)
             {
-                tokens.DeleteState();
+                Tokens.DeleteState();
                 return new Expression(constant);
             }
-            tokens.RestoreState();
+            Tokens.RestoreState();
             return null;
         }
     }
@@ -164,13 +184,13 @@ namespace Parse
 
         public override UnaryOperator? Parse()
         {
-            tokens.SaveState();
+            Tokens.SaveState();
             if (!CheckTokenType(operators)) 
             {
-                tokens.DeleteState();
-                return new UnaryOperator(tokens.Current.Type);
+                Tokens.DeleteState();
+                return new UnaryOperator(Tokens.Current.Type);
             }    
-            tokens.RestoreState();
+            Tokens.RestoreState();
             return null;
         }
     }
@@ -183,13 +203,13 @@ namespace Parse
 
         public override Constant? Parse()
         {
-            tokens.SaveState();
+            Tokens.SaveState();
             if (CheckTokenType(TokenType.integerLiteral)) 
             {
-                tokens.DeleteState();
-                return new Constant(tokens.Current.Value);
+                Tokens.DeleteState();
+                return new Constant(Tokens.Current.Value);
             }
-            tokens.RestoreState();
+            Tokens.RestoreState();
             return null;
         }
     }
