@@ -129,39 +129,11 @@ namespace Parse
 
         private Expression MatchExpression()
         {
-            return MatchConstant();
-        }
-    }
-
-   
-            
-            Constant? constant = new ConstantParser(Tokens).Parse();
-            if (constant is not null)
+            if (Match([TokenType.integerLiteral]))
             {
-                Tokens.DeleteState();
-                return new Expression(constant);
+                return new Constant(Previous().Value);
             }
-            Tokens.RestoreState();
-            return null;
-        }
-    }
-
-    public class ConstantParser : Parser
-    {
-        public ConstantParser(SmartList<Token> _token) : base(_token)
-        {
-        }
-
-        public override Constant? Parse()
-        {
-            Tokens.SaveState();
-            if (CheckTokenType(TokenType.integerLiteral)) 
-            {
-                Tokens.DeleteState();
-                return new Constant(Tokens.Current.Value);
-            }
-            Tokens.RestoreState();
-            return null;
+            return null;    //TODO throw error
         }
     }
 }
