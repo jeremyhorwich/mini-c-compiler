@@ -1,8 +1,8 @@
 namespace Tree
 {
-    public interface IVisitor
+    public interface IVisitor<TReturn, TNode> where TNode : Node
     {
-        public T Visit<T>(Node node);
+        public TReturn Visit(TNode node);
     }
 
     public abstract class Node
@@ -17,9 +17,9 @@ namespace Tree
             function = _function;
         }
 
-        public T Accept<T>(IVisitor visitor)
+        public T Accept<T>(IVisitor<T, Program> visitor)
         {
-            return visitor.Visit<T>(this);
+            return visitor.Visit(this);
         }
     }
 
@@ -34,17 +34,17 @@ namespace Tree
             statement = _statement;
         }
 
-        public T Accept<T>(IVisitor visitor)
+        public T Accept<T>(IVisitor<T, Function> visitor)
         {
-            return visitor.Visit<T>(this);
+            return visitor.Visit(this);
         }
     }
 
     public abstract class Statement : Node
     {
-        public virtual T Accept<T>(IVisitor visitor)
+        public virtual T Accept<T>(IVisitor<T, Statement> visitor)
         {
-            return visitor.Visit<T>(this);
+            return visitor.Visit(this);
         }
     }
 
@@ -57,17 +57,17 @@ namespace Tree
             expression = _expression;
         }
 
-        public override T Accept<T>(IVisitor visitor)
+        public T Accept<T>(IVisitor<T, ReturnStatement> visitor)
         {
-            return visitor.Visit<T>(this);
+            return visitor.Visit(this);
         }
     }
 
     public abstract class Expression : Node
     {
-        public virtual T Accept<T>(IVisitor visitor)
+        public virtual T Accept<T>(IVisitor<T, Expression> visitor)
         {
-            return visitor.Visit<T>(this);
+            return visitor.Visit(this);
         }
     }
 
@@ -80,9 +80,9 @@ namespace Tree
             integerLiteral = _integerLiteral;
         }
 
-        public override T Accept<T>(IVisitor visitor)
+        public T Accept<T>(IVisitor<T, Constant> visitor)
         {
-            return visitor.Visit<T>(this);
+            return visitor.Visit(this);
         }
     }
 }
