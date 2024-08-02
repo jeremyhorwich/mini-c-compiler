@@ -1,9 +1,15 @@
-using CompilerUtility;
 using Tree;
 using Lex;
 
 namespace Parse
 {
+    public class ParseException : SystemException 
+    {
+        public ParseException(string message) : base(message)
+        {
+        }
+    }
+    
     public class Parser
     {
         private List<Token> Tokens;
@@ -70,19 +76,35 @@ namespace Parse
         private Token Consume(TokenType type, string message)
         {
             if (Check(type)) return Advance();
-            throw new Exception(message);    //TODO
+            throw new ParseException(message);
         }
 
         private Token Consume(string value, string message)
         {
             if (Check(value)) return Advance();
-            throw new Exception(message);   //TODO
+            throw new ParseException(message);
         }
 
         private Token Previous()
         {
             return Tokens[Current - 1];
-        } 
+        }
+
+        private void Synchronize()
+        {
+            Advance();
+            
+            while (!EndReached()) 
+            {
+                if (Previous().Type == TokenType.semicolon) return;
+                
+                switch (Peek().Value) 
+                {
+                    case "return":
+                    return;
+                }
+            }
+      }
 
         public Program Parse()
         {
@@ -91,8 +113,10 @@ namespace Parse
                 Function function = MatchFunction();
                 return new Program(function);
             }
-            catch   //TODO
+            catch (ParseException e)
             {
+                Console.WriteLine(e.Message);
+                Synchronize();
                 return null;
             }
         }
@@ -116,8 +140,17 @@ namespace Parse
 
         private Statement MatchStatement()
         {
-            if (Match(["return"])) return MatchReturnStatement();
-            return null;
+            try
+            {
+                Match(["return"]);
+                return MatchReturnStatement();
+            }
+            catch (ParseException e)
+            {
+                Console.WriteLine(e.Message);
+                Synchronize();
+                return null;
+            }
         }
 
         private Statement MatchReturnStatement()
@@ -133,7 +166,7 @@ namespace Parse
             {
                 return new Constant(Previous().Value);
             }
-            return null;    //TODO throw error
+            throw new ParseException("No valid expression found");
         }
     }
 }
