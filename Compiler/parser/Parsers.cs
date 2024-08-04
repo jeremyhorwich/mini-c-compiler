@@ -106,12 +106,12 @@ namespace Parse
             }
       }
 
-        public Program Parse()
+        public CProgram Parse()
         {
             try
             {
                 Function function = MatchFunction();
-                return new Program(function);
+                return new CProgram(function);
             }
             catch (ParseException e)
             {
