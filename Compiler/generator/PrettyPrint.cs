@@ -4,7 +4,18 @@ namespace Generator
 {
     class PrettyPrinter : IVisitor<string>
     {
-        public string Visit(Program program) => $"\n{Visit(program.function)}";
+        public CProgram program;
+        public PrettyPrinter(CProgram _program)
+        {
+            program = _program;
+        }
+
+        public void Display()
+        {
+            Console.WriteLine(Visit(program));;
+        }
+
+        public string Visit(CProgram program) => $"\n{Visit(program.function)}";
 
         public string Visit(Function function)
         {
@@ -25,14 +36,5 @@ namespace Generator
             return $"INT<{constant.integerLiteral}>";
         }
 
-    }
-
-    class Test
-    {
-        public void test()
-        {
-            var pprint = new PrettyPrinter();
-            var constant = new Constant("5");
-        }
     }
 }

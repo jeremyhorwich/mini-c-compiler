@@ -2,22 +2,22 @@ namespace Tree
 {
     public interface IVisitor<T>
     {
-        public T Visit(Program program);
-        public T Visit(Function function);
-        public T Visit(Statement statement);
-        public T Visit(ReturnStatement returnStatement);
-        public T Visit(Expression expression);
-        public T Visit(Constant constant);
+        T Visit(CProgram program);
+        T Visit(Function function);
+        T Visit(Statement statement);
+        T Visit(ReturnStatement returnStatement);
+        T Visit(Expression expression);
+        T Visit(Constant constant);
     }   
 
     public abstract class Node
     {
     }
 
-    public class Program : Node
+    public class CProgram : Node
     {
         public Function function;
-        public Program(Function _function)
+        public CProgram(Function _function)
         {
             function = _function;
         }
