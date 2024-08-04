@@ -1,9 +1,14 @@
 namespace Tree
 {
-    public interface IVisitor<TReturn, TNode> where TNode : Node
+    public interface IVisitor<T>
     {
-        public TReturn Visit(TNode node);
-    }
+        public T Visit(Program program);
+        public T Visit(Function function);
+        public T Visit(Statement statement);
+        public T Visit(ReturnStatement returnStatement);
+        public T Visit(Expression expression);
+        public T Visit(Constant constant);
+    }   
 
     public abstract class Node
     {
@@ -17,7 +22,7 @@ namespace Tree
             function = _function;
         }
 
-        public T Accept<T>(IVisitor<T, Program> visitor)
+        public T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);
         }
@@ -34,7 +39,7 @@ namespace Tree
             statement = _statement;
         }
 
-        public T Accept<T>(IVisitor<T, Function> visitor)
+        public T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);
         }
@@ -42,7 +47,7 @@ namespace Tree
 
     public abstract class Statement : Node
     {
-        public virtual T Accept<T>(IVisitor<T, Statement> visitor)
+        public virtual T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);
         }
@@ -57,7 +62,7 @@ namespace Tree
             expression = _expression;
         }
 
-        public T Accept<T>(IVisitor<T, ReturnStatement> visitor)
+        public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);
         }
@@ -65,7 +70,7 @@ namespace Tree
 
     public abstract class Expression : Node
     {
-        public virtual T Accept<T>(IVisitor<T, Expression> visitor)
+        public virtual T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);
         }
@@ -80,7 +85,7 @@ namespace Tree
             integerLiteral = _integerLiteral;
         }
 
-        public T Accept<T>(IVisitor<T, Constant> visitor)
+        public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);
         }
