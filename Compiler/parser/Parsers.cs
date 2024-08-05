@@ -101,8 +101,10 @@ namespace Parse
                 switch (Peek().Value) 
                 {
                     case "return":
-                    return;
+                        return;
                 }
+                
+                Advance();
             }
       }
 
