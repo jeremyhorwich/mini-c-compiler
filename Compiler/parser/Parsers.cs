@@ -23,7 +23,7 @@ namespace Parse
         {
             foreach (TokenType type in types)
             {
-                if (!Check(type))
+                if (Check(type))
                 {
                     Advance();
                     return true;
@@ -36,7 +36,7 @@ namespace Parse
         {
             foreach (string value in values)
             {
-                if (!Check(value))
+                if (Check(value))
                 {
                     Advance();
                     return true;
@@ -144,8 +144,11 @@ namespace Parse
         {
             try
             {
-                Match(["return"]);
-                return MatchReturnStatement();
+                if (Match(["return"]))
+                {
+                    return MatchReturnStatement();
+                }
+                return null;
             }
             catch (ParseException e)
             {
