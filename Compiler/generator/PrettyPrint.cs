@@ -22,14 +22,14 @@ namespace Generate
             return $"\nFUNCTION {function.identifier}:{function.statement.Accept(this)}";
         }
 
-        public string Visit(Statement statement) => statement.Accept(this);
+        public string Visit(Statement statement) => throw new Exception("Cannot visit generic statement");
 
         public string Visit(ReturnStatement returnStatement)
         {
             return $"\n\tRETURN {returnStatement.expression.Accept(this)}";
         }
 
-        public string Visit(Expression expression) => expression.Accept(this);
+        public string Visit(Expression expression) => throw new Exception("Cannot visit generic expression");
 
         public string Visit(Constant constant)
         {

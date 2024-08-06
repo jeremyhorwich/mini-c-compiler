@@ -31,7 +31,7 @@ namespace Generate
             return assembly;
         }
 
-        public string Visit(Statement statement) => statement.Accept(this);
+        public string Visit(Statement statement) => throw new Exception("Cannot visit generic statement");
 
         public string Visit(ReturnStatement returnStatement)
         {
@@ -41,7 +41,7 @@ namespace Generate
             return assembly;
         }
 
-        public string Visit(Expression expression) => expression.Accept(this);
+        public string Visit(Expression expression) => throw new Exception("Cannot visit generic expression");
 
         public string Visit(Constant constant)
         {
