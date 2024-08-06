@@ -12,7 +12,7 @@ namespace Generator
 
         public void Display()
         {
-            Console.WriteLine(Visit(program));;
+            Console.WriteLine(program.Accept(this));
         }
 
         public string Visit(CProgram program) => $"{Visit(program.function)}";
@@ -24,13 +24,7 @@ namespace Generator
 
         public string Visit(Statement statement)
         {
-            switch (statement)
-            {
-                case ReturnStatement returnStmt:
-                    return Visit(returnStmt);
-                default:
-                    throw new InvalidOperationException($"Unhandled statement type: {statement.GetType().Name}");
-            }
+            return statement.Accept(this);
         }
 
         public string Visit(ReturnStatement returnStatement)
@@ -40,13 +34,7 @@ namespace Generator
 
         public string Visit(Expression expression)
         {
-            switch (expression)
-            {
-                case Constant constant:
-                    return Visit(constant);
-                default:
-                    throw new InvalidOperationException($"Unhandled expression type: {expression.GetType().Name}");
-            }
+            return expression.Accept(this);
         }
 
         public string Visit(Constant constant)
