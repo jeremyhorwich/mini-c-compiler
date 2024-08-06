@@ -1,4 +1,4 @@
-namespace Parse
+namespace Generate
 {
     public class Instruction
     {

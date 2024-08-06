@@ -21,6 +21,11 @@ namespace App
             var parser = new Parser(tokens);
             CProgram program = parser.Parse();
             
+            Generator generator = new Generator(program);
+            string assembly = generator.Generate();
+            Console.WriteLine(assembly);
+
+            Console.WriteLine();
             PrettyPrinter pprinter = new PrettyPrinter(program);
             pprinter.Display();
             
