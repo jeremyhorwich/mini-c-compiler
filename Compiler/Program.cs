@@ -1,5 +1,5 @@
 ﻿using Lex;
-using Generator;
+using Generate;
 using Parse;
 using Tree;
 

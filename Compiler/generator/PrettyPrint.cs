@@ -1,6 +1,6 @@
 using Tree;
 
-namespace Generator
+namespace Generate
 {
     class PrettyPrinter : IVisitor<string>
     {
@@ -15,18 +15,18 @@ namespace Generator
             Console.WriteLine(program.Accept(this));
         }
 
-        public string Visit(CProgram program) => $"{Visit(program.function)}";
+        public string Visit(CProgram program) => $"{program.function.Accept(this)}";
 
         public string Visit(Function function)
         {
-            return $"\nFUNCTION {function.identifier}:{Visit(function.statement)}";
+            return $"\nFUNCTION {function.identifier}:{function.statement.Accept(this)}";
         }
 
         public string Visit(Statement statement) => statement.Accept(this);
 
         public string Visit(ReturnStatement returnStatement)
         {
-            return $"\n\tRETURN {Visit(returnStatement.expression)}";
+            return $"\n\tRETURN {returnStatement.expression.Accept(this)}";
         }
 
         public string Visit(Expression expression) => expression.Accept(this);
