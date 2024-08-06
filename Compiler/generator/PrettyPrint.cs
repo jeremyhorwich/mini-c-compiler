@@ -22,20 +22,14 @@ namespace Generator
             return $"\nFUNCTION {function.identifier}:{Visit(function.statement)}";
         }
 
-        public string Visit(Statement statement)
-        {
-            return statement.Accept(this);
-        }
+        public string Visit(Statement statement) => statement.Accept(this);
 
         public string Visit(ReturnStatement returnStatement)
         {
             return $"\n\tRETURN {Visit(returnStatement.expression)}";
         }
 
-        public string Visit(Expression expression)
-        {
-            return expression.Accept(this);
-        }
+        public string Visit(Expression expression) => expression.Accept(this);
 
         public string Visit(Constant constant)
         {
