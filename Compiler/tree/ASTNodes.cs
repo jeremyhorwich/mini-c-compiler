@@ -45,11 +45,28 @@ namespace Tree
         }
     }
 
+    public class DefaultFunction : Function
+    {
+        public DefaultFunction(string _identifier) : base(_identifier, null!)
+        {
+            identifier = _identifier;
+        }
+
+        public new Statement statement {get {return null!; }}
+    }
+
     public abstract class Statement : Node
     {
         public virtual T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);
+        }
+    }
+
+    public class DefaultStatement : Statement
+    {
+        public DefaultStatement() : base()
+        {
         }
     }
 

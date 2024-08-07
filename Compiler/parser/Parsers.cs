@@ -14,6 +14,7 @@ namespace Parse
     {
         private List<Token> Tokens;
         private int Current = 0;
+        public bool hadError { get; private set; } = false;
         public Parser(List<Token> _tokens)
         {
             Tokens = _tokens;
@@ -76,12 +77,14 @@ namespace Parse
         private Token Consume(TokenType type, string message)
         {
             if (Check(type)) return Advance();
+            hadError = true;
             throw new ParseException(message);
         }
 
         private Token Consume(string value, string message)
         {
             if (Check(value)) return Advance();
+            hadError = true;
             throw new ParseException(message);
         }
 
@@ -115,29 +118,36 @@ namespace Parse
                 Function function = MatchFunction();
                 return new CProgram(function);
             }
-            catch (ParseException e)
+            catch (ParseException)
             {
-                Console.WriteLine(e.Message);
-                Synchronize();
-                return null;
+                throw;      //TOOD refactor to loop over list of functions and try each separately
             }
         }
 
         private Function MatchFunction()
         {
-            Consume("int", "Expected int");
+            try
+            {
+                Consume("int", "Expected int");
 
-            string identifier = Consume(TokenType.identifier, "Expected identifier after int").Value;
+                string identifier = Consume(TokenType.identifier, "Expected identifier after int").Value;
 
-            Consume(TokenType.openParantheses, "Expected ( after" + identifier);
-            Consume(TokenType.closeParentheses, "Expected ) after (");
-            Consume(TokenType.openBrace, "Expected { after )");
+                Consume(TokenType.openParantheses, "Expected ( after" + identifier);
+                Consume(TokenType.closeParentheses, "Expected ) after (");
+                Consume(TokenType.openBrace, "Expected { after )");
 
-            Statement statement = MatchStatement();
-            
-            Consume(TokenType.closeBrace, "Expected } at function end");
+                Statement statement = MatchStatement();
+                
+                Consume(TokenType.closeBrace, "Expected } at function end");
 
-            return new Function(identifier, statement);
+                return new Function(identifier, statement);
+            }
+            catch (ParseException e)
+            {
+                Console.WriteLine(e.Message);
+                Synchronize();
+                return new DefaultFunction("ERROR");
+            }
         }
 
         private Statement MatchStatement()
@@ -148,13 +158,14 @@ namespace Parse
                 {
                     return MatchReturnStatement();
                 }
-                return null;
+                hadError = true;
+                throw new ParseException("No valid statement found");
             }
             catch (ParseException e)
             {
                 Console.WriteLine(e.Message);
                 Synchronize();
-                return null;
+                return new DefaultStatement();
             }
         }
 
@@ -171,6 +182,7 @@ namespace Parse
             {
                 return new Constant(Previous().Value);
             }
+            hadError = true;
             throw new ParseException("No valid expression found");
         }
     }
