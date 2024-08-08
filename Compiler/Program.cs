@@ -9,7 +9,7 @@ namespace App
     {
         static void Main(string[] args)
         {
-            Test("int foo() {return 2;}");
+            Test("int foo() {return ;2;}");
             //Compile(args[0]);
         }
 
@@ -20,6 +20,12 @@ namespace App
 
             var parser = new Parser(tokens);
             CProgram program = parser.Parse();
+
+            if (parser.hadError)
+            {
+                Console.WriteLine("Could not successfully parse");
+                return;
+            }
             
             Generator generator = new Generator(program);
             string assembly = generator.Generate();
