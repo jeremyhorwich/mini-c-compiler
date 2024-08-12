@@ -9,7 +9,7 @@ namespace App
     {
         static void Main(string[] args)
         {
-            Test("int foo() {return ;2;}");
+            Test("int foo() {return 2;}");
             //Compile(args[0]);
         }
 
@@ -31,7 +31,6 @@ namespace App
             string assembly = generator.Generate();
             Console.WriteLine(assembly);
 
-            Console.WriteLine();
             PrettyPrinter pprinter = new PrettyPrinter(program);
             pprinter.Display();
             
