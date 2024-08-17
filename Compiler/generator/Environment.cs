@@ -8,7 +8,7 @@ namespace Generator
         {
             if (values.ContainsKey(varName))
             {
-                throw new Exception($"Error: variable {varName} already declared elsewhere.");
+                throw new Exception($"Error: variable {varName} is already declared elsewhere.");
             }
             values[varName] = value;
         } 
