@@ -13,7 +13,7 @@ namespace Generator
             values[varName] = value;
         } 
 
-        public Object Get(string varName)
+        public object Get(string varName)
         {
             if (values.ContainsKey(varName)) return values[varName];
             //TODO make this a parsing instead of compiling error
