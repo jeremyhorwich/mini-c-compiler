@@ -31,7 +31,7 @@ namespace Generate
         
         public string Visit(VariableDeclaration variableDeclaration)
         {
-            return $"\n\t{variableDeclaration.type} {variableDeclaration.identifier} = {variableDeclaration.value}";
+            return $"\n\tSET {variableDeclaration.type} {variableDeclaration.identifier} = {variableDeclaration.value}";
         }
 
         public string Visit(Expression expression) => throw new Exception("Cannot visit generic expression");
