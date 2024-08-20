@@ -6,6 +6,7 @@ namespace Tree
         T Visit(Function function);
         T Visit(Statement statement);
         T Visit(ReturnStatement returnStatement);
+        T Visit(VariableDeclaration variableDeclaration);
         T Visit(Expression expression);
         T Visit(Constant constant);
     }   
@@ -79,6 +80,25 @@ namespace Tree
             expression = _expression;
         }
 
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
+    }
+
+    public class VariableDeclaration : Statement
+    {
+        public string identifier;
+        public string type;
+        public string value;
+
+        public VariableDeclaration(string _identifier, string _type, string _value)
+        {
+            identifier = _identifier;
+            type = _type;
+            value = _value;
+        }
+        
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);

@@ -28,6 +28,11 @@ namespace Generate
         {
             return $"\n\tRETURN {returnStatement.expression.Accept(this)}";
         }
+        
+        public string Visit(VariableDeclaration variableDeclaration)
+        {
+            return $"\n\t{variableDeclaration.type} {variableDeclaration.identifier} = {variableDeclaration.value}";
+        }
 
         public string Visit(Expression expression) => throw new Exception("Cannot visit generic expression");
 
