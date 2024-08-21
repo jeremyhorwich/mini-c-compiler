@@ -1,6 +1,6 @@
-namespace Generator
+namespace Generate
 {
-    public class Environment
+    public class CEnvironment
     {
         private Dictionary<string, string> values = new Dictionary<string, string>();
 
