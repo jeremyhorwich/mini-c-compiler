@@ -2,9 +2,9 @@ namespace Generator
 {
     public class Environment
     {
-        private Dictionary<string, Object> values = new Dictionary<string, Object>();
+        private Dictionary<string, string> values = new Dictionary<string, string>();
 
-        public void Define(string varName, Object value)
+        public void Define(string varName, string value)
         {
             if (values.ContainsKey(varName))
             {
@@ -13,7 +13,7 @@ namespace Generator
             values[varName] = value;
         } 
 
-        public object Get(string varName)
+        public string Get(string varName)
         {
             if (values.ContainsKey(varName)) return values[varName];
             //TODO make this a parsing instead of compiling error
