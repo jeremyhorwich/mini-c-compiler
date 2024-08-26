@@ -43,6 +43,11 @@ namespace Generate
             throw new Exception($"Error: variable {varName} does not exist");
         }
 
+        public CEnvironment Wrap()
+        {
+            return new CEnvironment(this);
+        }
+
         public CEnvironment Unwrap()
         {
             if (enclosing == null) throw new Exception("Trying to unwrap top level environment");
