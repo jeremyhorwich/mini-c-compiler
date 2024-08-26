@@ -1,3 +1,4 @@
+using System.Collections;
 using Tree;
 
 namespace Generate
@@ -35,6 +36,11 @@ namespace Generate
         }
 
         public string Visit(Expression expression) => throw new Exception("Cannot visit generic expression");
+
+        public string Visit(UnaryOperation unaryOperation)
+        {
+            return $"{unaryOperation.unaryOperator}<{unaryOperation.expression.Accept(this)}>";
+        }
 
         public string Visit(Constant constant)
         {

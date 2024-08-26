@@ -9,6 +9,7 @@ namespace Tree
         T Visit(VariableDeclaration variableDeclaration);
         T Visit(Expression expression);
         T Visit(Constant constant);
+        T Visit(UnaryOperation unaryOperation);
     }   
 
     public abstract class Node
@@ -108,6 +109,23 @@ namespace Tree
     public abstract class Expression : Node
     {
         public virtual T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
+    }
+
+    public abstract class UnaryOperation : Expression
+    {
+        public string unaryOperator;
+        public Expression expression;
+
+        public UnaryOperation(string _unaryOperator, Expression _expression)
+        {
+            unaryOperator = _unaryOperator;
+            expression = _expression;
+        }
+
+        public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);
         }

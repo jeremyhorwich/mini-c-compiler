@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Reflection;
 using Tree;
 
 namespace Generate
@@ -53,6 +55,28 @@ namespace Generate
         }
 
         public string Visit(Expression expression) => throw new Exception("Cannot visit generic expression");
+
+        public string Visit(UnaryOperation unaryOperation)
+        {
+            string assembly = "";
+            assembly += unaryOperation.expression.Accept(this);
+
+            switch (unaryOperation.unaryOperator)
+            {
+                case "-":
+                    assembly += new Instruction("neg", "%eax").Format();
+                    return assembly;
+                case "~":
+                    assembly += new Instruction("not", "%eax").Format();
+                    return assembly;
+                case "!":
+                    assembly += new Instruction("cmpl","$0, %eax");
+                    assembly += new Instruction("movl","$0, %eax");
+                    assembly += new Instruction("sete","%al");
+                    return assembly;
+            }
+            throw new Exception("No valid unary operator found");
+        }
 
         public string Visit(Constant constant)
         {
