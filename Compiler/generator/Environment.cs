@@ -42,6 +42,12 @@ namespace Generate
             //TODO make this a parsing instead of compiling error
             throw new Exception($"Error: variable {varName} does not exist");
         }
+
+        public CEnvironment Unwrap()
+        {
+            if (enclosing == null) throw new Exception("Trying to unwrap top level environment");
+            return enclosing;
+        }
     }
 
     public class CVariable
